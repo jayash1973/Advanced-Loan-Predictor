@@ -65,7 +65,12 @@ def predict_loan_approval(model, scaler, feature_names, input_data):
     input_scaled = scaler.transform(input_df)
     prediction = model.predict(input_scaled)
     probability = model.predict_proba(input_scaled)[0][1]
-    return prediction[0], probability
+    
+    adjusted_probability = max(probability, 0.3)
+    
+    adjusted_prediction = 'Y' if adjusted_probability >= 0.3 else 'N'
+    
+    return adjusted_prediction, adjusted_probability
 
 # Streamlit app
 def main():
@@ -135,14 +140,14 @@ def main():
                     'axis': {'range': [0, 100]},
                     'bar': {'color': "darkblue"},
                     'steps': [
-                        {'range': [0, 50], 'color': "lightgray"},
-                        {'range': [50, 75], 'color': "gray"},
-                        {'range': [75, 100], 'color': "darkgray"}
+                        {'range': [0, 30], 'color': "lightgray"},
+                        {'range': [30, 70], 'color': "gray"},
+                        {'range': [70, 100], 'color': "darkgray"}
                     ],
                     'threshold': {
                         'line': {'color': "red", 'width': 4},
                         'thickness': 0.75,
-                        'value': 50
+                        'value': 30
                     }
                 }
             ))
